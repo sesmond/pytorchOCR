@@ -8,3 +8,5 @@ Polygon3
 pyclipper
 shapely
 imgaug
+yaml
+tqdm
