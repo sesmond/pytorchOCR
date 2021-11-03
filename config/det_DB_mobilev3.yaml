@@ -1,7 +1,7 @@
 base:
   gpu_id: '1'
   algorithm: DB
-  pretrained: True
+  pretrained: False
   in_channels: [24, 40, 48, 96]
   inner_channels: 96
   k: 50

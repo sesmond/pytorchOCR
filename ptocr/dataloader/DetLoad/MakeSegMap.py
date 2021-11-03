@@ -4,18 +4,12 @@
 @file: MakeSegMap.py
 @time: 2020/08/11
 """
-#-*- coding:utf-8 _*-
-"""
-@author:fxw
-@file: MakeSegMap.py
-@time: 2020/04/28
-"""
 
 import cv2
 import pyclipper
 from shapely.geometry import Polygon
 import numpy as np
-import Polygon as plg
+# import Polygon as plg
 
 class MakeSegMap():
     r'''
@@ -180,7 +174,7 @@ class MakeSegPSE():
         rate = rate * rate
         shrinked_bboxes = []
         for bbox in bboxes:
-            area = plg.Polygon(bbox).area()
+            area = Polygon(bbox).area
             peri = self.perimeter(bbox)
 
             pco = pyclipper.PyclipperOffset()

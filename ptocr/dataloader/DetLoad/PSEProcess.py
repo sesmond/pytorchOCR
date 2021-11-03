@@ -1,25 +1,47 @@
-#-*- coding:utf-8 _*-
+# -*- coding:utf-8 _*-
 """
 @author:fxw
 @file: PSEProcess.py
 @time: 2020/08/11
 """
+import glob
+import os
+
 import cv2
-import torch
 import numpy as np
+import torch
+import torchvision.transforms as transforms
 from PIL import Image
 from torch.utils import data
-from .transform_img import Random_Augment
-from .MakeSegMap import MakeSegPSE
-import torchvision.transforms as transforms
+
 from ptocr.utils.util_function import resize_image
+from .MakeSegMap import MakeSegPSE
+from .transform_img import Random_Augment
+from .. import data_reader
+
+
+def get_files(data_path):
+    """
+    获取目录下以及子目录下的图片
+    :param data_path:
+    :return:
+    """
+    files = []
+    exts = ['jpg', 'png', 'jpeg', 'JPG', 'bmp']
+    for ext in exts:
+        # glob.glob 得到所有文件名
+        # 一层 2层子目录都取出来
+        files.extend(glob.glob(os.path.join(data_path, '*.{}'.format(ext))))
+        files.extend(glob.glob(os.path.join(data_path, '*', '*.{}'.format(ext))))
+    return files
+
 
 class PSEProcessTrain(data.Dataset):
-    def __init__(self,config):
-        super(PSEProcessTrain,self).__init__()
+    def __init__(self, config):
+        super(PSEProcessTrain, self).__init__()
         self.crop_shape = config['base']['crop_shape']
         self.TSM = Random_Augment(self.crop_shape)
-        self.MSM = MakeSegPSE(config['base']['classes'],config['base']['shrink_ratio'])
+        self.MSM = MakeSegPSE(config['base']['classes'], config['base']['shrink_ratio'])
         img_list, label_list = self.get_base_information(config['trainload']['train_file'])
         self.img_list = img_list
         self.label_list = label_list
@@ -34,7 +56,7 @@ class PSEProcessTrain(data.Dataset):
         rect[3] = pts[np.argmax(diff)]
         return rect
 
-    def get_bboxes(self,gt_path):
+    def get_bboxes(self, gt_path):
         polys = []
         tags = []
         with open(gt_path, 'r', encoding='utf-8') as fid:
@@ -51,17 +73,38 @@ class PSEProcessTrain(data.Dataset):
                 polys.append(box)
         return np.array(polys), tags
 
-    def get_base_information(self,train_txt_file):
+    def get_base_information(self, train_txt_file):
         label_list = []
         img_list = []
-        with open(train_txt_file,'r',encoding='utf-8') as fid:
+
+        # 参与训练的所有图片名
+        paths = open(train_txt_file, "r").readlines()
+        for sel_type in paths:
+            sel_type = sel_type.rstrip('\n')
+            img_path, label_path, data_type = sel_type.split(" ")
+            real_reader = data_reader.get_data_reader(data_type)
+            image_list = np.array(get_files(img_path))
+            if len(image_list) <= 0:
+                continue
+            for img_p in image_list:
+                success, text_polys, text_tags = real_reader.get_annotation(img_p, label_path)
+                if success:
+                    text_polys = text_polys.reshape(len(text_polys), -1)
+                    img_list.append(img_p)
+                    label_list.append([text_polys, text_tags])
+        return img_list, label_list
+
+    def get_base_information_Old(self, train_txt_file):
+        label_list = []
+        img_list = []
+        with open(train_txt_file, 'r', encoding='utf-8') as fid:
             lines = fid.readlines()
             for line in lines:
                 line = line.strip('\n').split('\t')
                 img_list.append(line[0])
                 result = self.get_bboxes(line[1])
                 label_list.append(result)
-        return img_list,label_list
+        return img_list, label_list
 
     def __len__(self):
         return len(self.img_list)
@@ -80,7 +123,6 @@ class PSEProcessTrain(data.Dataset):
         imgs = self.TSM.random_crop_pse(imgs)
         img, gt_text, train_mask, gt_kernels = imgs[0], imgs[1], imgs[2], imgs[3:]
 
-
         img = Image.fromarray(img).convert('RGB')
         img = transforms.ColorJitter(brightness=32.0 / 255, saturation=0.5)(img)
         img = self.TSM.normalize_img(img)
@@ -89,8 +131,7 @@ class PSEProcessTrain(data.Dataset):
         train_mask = torch.from_numpy(train_mask).float()
         gt_kernels = torch.from_numpy(np.array(gt_kernels)).float()
 
-        return img,gt_text,gt_kernels,train_mask
-
+        return img, gt_text, gt_kernels, train_mask
 
 
 class PSEProcessTest():
@@ -109,12 +150,14 @@ class PSEProcessTest():
                 line = line.strip('\n')
                 img_list.append(line)
         return img_list
+
     def __len__(self):
         return len(self.img_list)
+
     def __getitem__(self, index):
         ori_img = cv2.imread(self.img_list[index])
-        img = resize_image(ori_img,self.config['base']['algorithm'], self.test_size,stride = self.config['testload']['stride'])
+        img = resize_image(ori_img, self.config['base']['algorithm'], self.test_size,
+                           stride=self.config['testload']['stride'])
         img = Image.fromarray(img).convert('RGB')
         img = self.TSM.normalize_img(img)
         return img, ori_img
-
