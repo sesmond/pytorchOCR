@@ -1,7 +1,7 @@
 base:
   gpu_id: '1'
   algorithm: PSE
-  pretrained: True
+  pretrained: False
   in_channels: [24, 40, 48, 96]
   inner_channels: 96
   classes: 7
@@ -42,6 +42,8 @@ optimizer:
   function: ptocr.optimizer,SGDDecay
   base_lr: 0.002
   momentum: 0.99
+  weight_decay: 0.00005 #TODO
+
 
 optimizer_decay:
   function: ptocr.optimizer,adjust_learning_rate_poly
@@ -49,13 +51,13 @@ optimizer_decay:
 
 trainload:
   function: ptocr.dataloader.DetLoad.PSEProcess,PSEProcessTrain
-  train_file: /src/notebooks/detect_text/icdar2015/train_list.txt
+  train_file: dataset/train_data.cfg # 训练数据集列表
   num_workers: 0
   batch_size: 2
 
 testload:
   function: ptocr.dataloader.DetLoad.PSEProcess,PSEProcessTest
-  test_file: /src/notebooks/detect_text/icdar2015/test_list.txt
+  test_file: dataset/validate_data.cfg # 训练数据集列表
   test_gt_path: /src/notebooks/detect_text/icdar2015/ch4_test_gts/
   test_size: 2240
   stride: 32
