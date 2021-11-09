@@ -8,7 +8,7 @@ if [ "$1" == "proxy" ]; then
         --build-arg HTTP_PROXY="http://172.17.0.1:8123" \
         --build-arg HTTPS_PROXY="http://172.17.0.1:8123" \
         -f deploy/Dockerfile \
-        -t pytorch.img:v1 .
+        -t opencv-docker-base:v1 .
     exit
 fi
 
