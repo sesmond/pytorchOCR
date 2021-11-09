@@ -2,7 +2,7 @@ CXXFLAGS = -I include  -std=c++11 -O3 $(shell python3-config --cflags)
 
 DEPS = lanms.h $(shell find include -xtype f)
 CXX_SOURCES = pixelmerge.cpp include/clipper/clipper.cpp
-OPENCV = `pkg-config --cflags --libs opencv`
+OPENCV = `pkg-config --cflags --libs opencv4`
 
 LIB_SO = pixelmerge.so
 

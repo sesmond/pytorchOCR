@@ -1,4 +1,5 @@
-# make nms 
+echo "编译C++项目"
+# make nms
 cd ptocr/postprocess/lanms/
 make clean
 make

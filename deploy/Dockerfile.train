@@ -1,0 +1,6 @@
+From opencv-docker-base:v2
+
+MAINTAINER vincent
+
+ADD requirements.txt /root/requirements.txt
+RUN pip install -r /root/requirements.txt --no-dependencies

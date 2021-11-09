@@ -150,7 +150,7 @@ def TrainValProgram(args):
     config = yaml.load(open(args.config, 'r', encoding='utf-8'),Loader=yaml.FullLoader)
     config = merge_config(config,args)
     
-    os.environ["CUDA_VISIBLE_DEVICES"] = config['base']['gpu_id']
+    # os.environ["CUDA_VISIBLE_DEVICES"] = config['base']['gpu_id']
     create_dir(config['base']['checkpoints'])
     checkpoints = os.path.join(config['base']['checkpoints'],
                                "ag_%s_bb_%s_he_%s_bs_%d_ep_%d_%s" % (config['base']['algorithm'],
