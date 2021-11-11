@@ -12,6 +12,7 @@ base:
   checkpoints: ./checkpoint
   restore: False
   restore_file: ./PSE.pth.tar
+  start_val: 400
 
 backbone:
   function: ptocr.model.backbone.det_mobilev3,mobilenet_v3_small
