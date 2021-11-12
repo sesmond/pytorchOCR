@@ -59,8 +59,8 @@ trainload:
 
 testload:
   function: ptocr.dataloader.DetLoad.PSEProcess,PSEProcessTest
-  test_file: dataset/validate_data.cfg # 训练数据集列表
-  test_gt_path: /src/notebooks/detect_text/icdar2015/ch4_test_gts/
+  test_file: dataset/validate_data.cfg # 测试数据集列表
+  test_gt_path: ./data/icdar2015/test.labels
   test_size: 2240
   stride: 32
   num_workers: 5
