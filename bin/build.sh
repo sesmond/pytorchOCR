@@ -12,4 +12,4 @@ if [ "$1" == "proxy" ]; then
     exit
 fi
 
-docker build -f deploy/Dockerfile.train -t opencv-docker-base:v2 .
+docker build -f deploy/Dockerfile.train -t opencv-docker-base:v3 .

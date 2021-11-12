@@ -28,6 +28,7 @@ from tools.cal_rescall.script import cal_recall_precison_f1
 from ptocr.utils.util_function import create_process_obj, merge_config
 from ptocr.utils.prune_script import updateBN, load_prune_model
 from ptocr.utils.gen_teacher_model import GetTeacherModel, DistilLoss
+import logging
 
 GLOBAL_WORKER_ID = None
 GLOBAL_SEED = 123456
@@ -37,6 +38,8 @@ torch.cuda.manual_seed(GLOBAL_SEED)
 torch.cuda.manual_seed_all(GLOBAL_SEED)
 np.random.seed(GLOBAL_SEED)
 random.seed(GLOBAL_SEED)
+
+logger = logging.getLogger(__name__)
 
 
 def worker_init_fn(worker_id):
@@ -149,6 +152,7 @@ def ModelEval(test_dataset, test_data_loader, model, imgprocess, checkpoints, co
                     fid_res.write(bbox_str)
             cv2.imwrite(os.path.join(checkpoints, 'val', 'res_img', image_name + '.jpg'), img_show)
     bar.close()
+    # TODO
     result_dict = cal_recall_precison_f1(config['testload']['test_gt_path'],
                                          os.path.join(checkpoints, 'val', 'res_txt'))
     print("result_dict:", type(result_dict), result_dict)

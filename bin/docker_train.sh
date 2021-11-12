@@ -43,7 +43,7 @@ FULL_CMD="
     --name ocr_train
     --network host
     --workdir /home/pytorchOCR
-    opencv-docker-base:v3
+    opencv.cuda.base:v1
     $CMD_STR
 "
 
