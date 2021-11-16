@@ -59,14 +59,14 @@ optimizer_decay:
 
 trainload:
   function: ptocr.dataloader.DetLoad.DBProcess,DBProcessTrain
-  train_file: /src/notebooks/detect_text/icdar2015/train_list.txt
+  train_file: dataset/train_data.cfg # 训练数据集列表
   num_workers: 10
   batch_size: 16
 
 testload:
   function: ptocr.dataloader.DetLoad.DBProcess,DBProcessTest
-  test_file: /src/notebooks/detect_text/icdar2015/test_list.txt
-  test_gt_path: /src/notebooks/detect_text/icdar2015/ch4_test_gts/
+  test_file: dataset/validate_data.cfg # 测试数据集列表
+  test_gt_path: ./data/icdar2015/test.labels
   test_size: 736
   stride: 32
   num_workers: 5
