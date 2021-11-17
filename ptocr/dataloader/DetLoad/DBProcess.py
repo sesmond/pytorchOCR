@@ -4,8 +4,6 @@
 @file: DBProcess.py
 @time: 2020/08/11
 """
-import glob
-import os
 
 import cv2
 import numpy as np
@@ -15,29 +13,16 @@ from PIL import Image
 from torch.utils import data
 
 from ptocr.utils.util_function import resize_image
+from . import DataProcessBase
 from .MakeBorderMap import MakeBorderMap
 from .MakeSegMap import MakeSegMap
 from .transform_img import Random_Augment
-from .. import data_reader
 
 
-def get_files(data_path):
+class DBProcessTrain(DataProcessBase):
     """
-    获取目录下以及子目录下的图片
-    :param data_path:
-    :return:
+    DBNet 数据处理
     """
-    files = []
-    exts = ['jpg', 'png', 'jpeg', 'JPG', 'bmp']
-    for ext in exts:
-        # glob.glob 得到所有文件名
-        # 一层 2层子目录都取出来
-        files.extend(glob.glob(os.path.join(data_path, '*.{}'.format(ext))))
-        files.extend(glob.glob(os.path.join(data_path, '*', '*.{}'.format(ext))))
-    return files
-
-
-class DBProcessTrain(data.Dataset):
     def __init__(self, config):
         super(DBProcessTrain, self).__init__()
         self.crop_shape = config['base']['crop_shape']
@@ -48,71 +33,10 @@ class DBProcessTrain(data.Dataset):
         self.img_list = img_list
         self.label_list = label_list
 
-    def order_points(self, pts):
-        rect = np.zeros((4, 2), dtype="float32")
-        s = pts.sum(axis=1)
-        rect[0] = pts[np.argmin(s)]
-        rect[2] = pts[np.argmax(s)]
-        diff = np.diff(pts, axis=1)
-        rect[1] = pts[np.argmin(diff)]
-        rect[3] = pts[np.argmax(diff)]
-        return rect
-
-    def get_bboxes(self, gt_path):
-        polys = []
-        tags = []
-        with open(gt_path, 'r', encoding='utf-8') as fid:
-            lines = fid.readlines()
-            for line in lines:
-                line = line.replace('\ufeff', '').replace('\xef\xbb\xbf', '')
-                gt = line.split(',')
-                if "#" in gt[-1]:
-                    tags.append(True)
-                else:
-                    tags.append(False)
-                # box = [int(gt[i]) for i in range(len(gt)//2*2)]
-                box = [int(gt[i]) for i in range(8)]
-                polys.append(box)
-        return np.array(polys), tags
-
-    def get_base_information(self, train_txt_file):
-        label_list = []
-        img_list = []
-
-        # 参与训练的所有图片名
-        paths = open(train_txt_file, "r").readlines()
-        for sel_type in paths:
-            sel_type = sel_type.rstrip('\n')
-            img_path, label_path, data_type = sel_type.split(" ")
-            real_reader = data_reader.get_data_reader(data_type)
-            image_list = np.array(get_files(img_path))
-            if len(image_list) <= 0:
-                continue
-            for img_p in image_list:
-                success, text_polys, text_tags = real_reader.get_annotation(img_p, label_path)
-                if success:
-                    text_polys = text_polys.reshape(len(text_polys), -1)
-                    img_list.append(img_p)
-                    label_list.append([text_polys, text_tags])
-        return img_list, label_list
-        #
-        # # TODO!!
-        # label_list = []
-        # img_list = []
-        # with open(train_txt_file,'r',encoding='utf-8') as fid:
-        #     lines = fid.readlines()
-        #     for line in lines:
-        #         line = line.strip('\n').split('\t')
-        #         img_list.append(line[0])
-        #         result = self.get_bboxes(line[1])
-        #         label_list.append(result)
-        # return img_list,label_list
-
     def __len__(self):
         return len(self.img_list)
 
     def __getitem__(self, index):
-
         img = Image.open(self.img_list[index]).convert('RGB')
         img = np.array(img)[:, :, ::-1]
 
@@ -138,6 +62,9 @@ class DBProcessTrain(data.Dataset):
 
 
 class DBProcessTrainMul(data.Dataset):
+    """
+    多GPU训练
+    """
     def __init__(self, config):
         super(DBProcessTrainMul, self).__init__()
         self.crop_shape = config['base']['crop_shape']

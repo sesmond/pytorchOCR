@@ -56,7 +56,7 @@ def ModelTrain(train_data_loader, t_model, t_criterion, model, criterion, optimi
     else:
         running_metric_text = runningScore(2)
         running_metric_kernel = runningScore(2)
-    logger.info("running_metric_text:{%r},data len:{%r}", running_metric_text, len(train_data_loader))
+    logger.info("train_data_loader len:{%r}", len(train_data_loader))
     for batch_idx, data in enumerate(train_data_loader):
         if (data is None):
             continue

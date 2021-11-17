@@ -24,14 +24,15 @@ def get_img(img_path):
     img = np.array(img)
     return img
 
+
 class SASTProcessTrain(data.Dataset):
     """
     SAST process function for training
     """
 
     def __init__(self, config):
-        self.TSM = Random_Augment(config['base']['crop_shape'],max_tries=20,
-          min_crop_side_ratio=config['trainload']['min_crop_side_ratio'])
+        self.TSM = Random_Augment(config['base']['crop_shape'], max_tries=20,
+                                  min_crop_side_ratio=config['trainload']['min_crop_side_ratio'])
         self.img_set_dir = config['trainload']['train_file']
         image_shape = config['base']['crop_shape']
         self.input_size = image_shape[0]
@@ -316,8 +317,8 @@ class SASTProcessTrain(data.Dataset):
                 poly_quads = self.poly2quads(poly)
                 # stcl map
                 stcl_quads, quad_index = self.shrink_poly_along_width(tcl_quads,
-                                                  shrink_ratio_of_width=shrink_ratio_of_width,
-                                                  expand_height_ratio=1.0 / tcl_ratio)
+                                                                      shrink_ratio_of_width=shrink_ratio_of_width,
+                                                                      expand_height_ratio=1.0 / tcl_ratio)
                 # generate tcl map
                 cv2.fillPoly(score_map, np.round(stcl_quads).astype(np.int32), 1.0)
 
@@ -439,8 +440,8 @@ class SASTProcessTrain(data.Dataset):
         # SAST head
         tvo_map, tco_map = self.generate_tvo_and_tco((self.input_size, self.input_size), text_polys, text_tags,
                                                      tcl_ratio=0.3, ds_ratio=0.25)
-        
-         # add gaussian blur
+
+        # add gaussian blur
         if np.random.rand() < 0.1 * 0.5:
             ks = np.random.permutation(5)[0] + 1
             ks = int(ks / 2) * 2 + 1
@@ -456,10 +457,9 @@ class SASTProcessTrain(data.Dataset):
 
         img = Image.fromarray(img.astype(np.uint8)).convert('RGB')
         img.save('img.jpg')
-        
-        cv2.imwrite('score.jpg',np.array(score_map)*255)
-        
-        
+
+        cv2.imwrite('score.jpg', np.array(score_map) * 255)
+
         img = self.TSM.normalize_img(img)
 
         score_map = torch.Tensor(score_map[np.newaxis, :, :])
@@ -469,7 +469,6 @@ class SASTProcessTrain(data.Dataset):
         tco_map = torch.Tensor(tco_map.transpose((2, 0, 1)))
 
         return img, score_map, border_map, training_mask, tvo_map, tco_map
-
 
 
 class SASTProcessTest(data.Dataset):
@@ -498,7 +497,7 @@ class SASTProcessTest(data.Dataset):
 
     def __getitem__(self, index):
         ori_img = get_img(self.img_list[index])
-        img = resize_image(ori_img, self.config['base']['algorithm'], self.test_size,self.config['testload']['stride'])
+        img = resize_image(ori_img, self.config['base']['algorithm'], self.test_size, self.config['testload']['stride'])
         img = Image.fromarray(img).convert('RGB')
         img = self.TSM.normalize_img(img)
         return img, ori_img
