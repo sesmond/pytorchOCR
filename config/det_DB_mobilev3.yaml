@@ -60,7 +60,7 @@ optimizer_decay:
 trainload:
   function: ptocr.dataloader.DetLoad.DBProcess,DBProcessTrain
   train_file: dataset/train_data.cfg # 训练数据集列表
-  num_workers: 10
+  num_workers: 5
   batch_size: 16
 
 testload:
