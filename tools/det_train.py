@@ -105,7 +105,7 @@ def ModelTrain(train_data_loader, t_model, t_criterion, model, criterion, optimi
             log += 'ACC:{:.4f}'.format(acc) + ' | '
             log += 'IOU:{:.4f}'.format(iou) + ' | '
             log += 'lr:{:.8f}'.format(optimizer.param_groups[0]['lr'])
-            print(log)
+            logger.info(log)
     loss_write = []
     for key in list(loss_bin.keys()):
         loss_write.append(loss_bin[key].loss_mean())
@@ -158,7 +158,7 @@ def ModelEval(test_dataset, test_data_loader, model, imgprocess, checkpoints, co
     # TODO
     result_dict = cal_recall_precison_f1(config['testload']['test_gt_path'],
                                          os.path.join(checkpoints, 'val', 'res_txt'))
-    print("result_dict:", type(result_dict), result_dict)
+    logger.debug("result_dict:%r,%r", type(result_dict), result_dict)
     return result_dict['recall'], result_dict['precision'], result_dict['hmean']
 
 
@@ -233,7 +233,7 @@ def TrainValProgram(args):
 
     if args.pruned_model_dict_path is not None:
         logger.info("finetune the pruend model.'")
-        print('finetune the pruend model.')
+        logger.info('finetune the pruend model.')
         model = load_prune_model(model, args.prune_model_path, args.pruned_model_dict_path, args.prune_type)
         log_write = Logger(os.path.join(checkpoints, 'log.txt'), title=config['base']['algorithm'])
         title = list(loss_bin.keys())
@@ -242,7 +242,7 @@ def TrainValProgram(args):
         log_write.set_names(title)
 
     elif config['base']['restore']:
-        print('Resuming from checkpoint.')
+        logger.info('Resuming from checkpoint.')
         assert os.path.isfile(config['base']['restore_file']), 'Error: no checkpoint file found!'
         checkpoint = torch.load(config['base']['restore_file'])
         start_epoch = checkpoint['epoch']
@@ -253,7 +253,7 @@ def TrainValProgram(args):
         best_hmean = checkpoint['hmean']
         log_write = Logger(os.path.join(checkpoints, 'log.txt'), title=config['base']['algorithm'], resume=True)
     else:
-        print('Training from scratch.')
+        logger.info('Training from scratch.')
         log_write = Logger(os.path.join(checkpoints, 'log.txt'), title=config['base']['algorithm'])
         title = list(loss_bin.keys())
         title.extend(
@@ -282,7 +282,7 @@ def TrainValProgram(args):
             model.eval()
             rescall, precision, hmean = ModelEval(test_dataset, test_data_loader, model, img_process, checkpoints,
                                                   config)
-            print('rescall:', rescall, 'precision', precision, 'hmean', hmean)
+            logger.info('rescall:', rescall, 'precision', precision, 'hmean', hmean)
             if (hmean > best_hmean):
                 save_checkpoint({
                     'epoch': epoch + 1,
