@@ -23,6 +23,7 @@ ADD deploy/pip.conf /root/.pip
 # 在线太慢，离线下载安装
 ADD deploy/torch-1.7.1+cu101-cp37-cp37m-linux_x86_64.whl /root/torch-1.7.1+cu101-cp37-cp37m-linux_x86_64.whl
 RUN pip install /root/torch-1.7.1+cu101-cp37-cp37m-linux_x86_64.whl
+pip install torch==1.7.1+cu101  -f https://download.pytorch.org/whl/torch_stable.html
 RUN pip install torchvision==0.8.2+cu101 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html
 # ADD requirements.txt /root/requirements.txt
 # RUN pip install -r /root/requirements.txt --no-dependencies

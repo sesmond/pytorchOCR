@@ -10,12 +10,11 @@ import numpy as np
 
 BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 
-if subprocess.call(['make', '-C', BASE_DIR]) != 0:  # return value
-    raise RuntimeError('Cannot compile pse: {}'.format(BASE_DIR))
+# if subprocess.call(['make', '-C', BASE_DIR]) != 0:  # return value
+#     raise RuntimeError('Cannot compile pse: {}'.format(BASE_DIR))
 
     
 def pse(outputs,config):
-    
     from .pixelmerge import pse_cpp,get_points,get_num
     
     score = torch.sigmoid(outputs[:, 0, :, :])

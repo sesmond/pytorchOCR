@@ -1,6 +1,11 @@
-From opencv-docker-base:v2
+From opencv-docker-base:v3
 
 MAINTAINER vincent
+RUN rm /root/torch-1.7.1+cu101-cp37-cp37m-linux_x86_64.whl
 
+ADD deploy/pip.conf /root/.pip
+RUN pip install --upgrade pip
 ADD requirements.txt /root/requirements.txt
-RUN pip install -r /root/requirements.txt --no-dependencies
+RUN pip install -r /root/requirements.txt --no-dependencies --default-timeout=500 -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+pip install -r requirements.txt --no-dependencies --default-timeout=500 -i https://pypi.tuna.tsinghua.edu.cn/simple

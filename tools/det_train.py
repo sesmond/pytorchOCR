@@ -6,6 +6,8 @@
 """
 import sys
 
+from tools import logger_utils
+
 sys.path.append('./')
 import cv2
 import torch
@@ -54,6 +56,7 @@ def ModelTrain(train_data_loader, t_model, t_criterion, model, criterion, optimi
     else:
         running_metric_text = runningScore(2)
         running_metric_kernel = runningScore(2)
+    logger.info("running_metric_text:{%r},data len:{%r}", running_metric_text, len(train_data_loader))
     for batch_idx, data in enumerate(train_data_loader):
         if (data is None):
             continue
@@ -160,6 +163,11 @@ def ModelEval(test_dataset, test_data_loader, model, imgprocess, checkpoints, co
 
 
 def TrainValProgram(args):
+    """
+    训练入口
+    @param args:
+    @return:
+    """
     config = yaml.load(open(args.config, 'r', encoding='utf-8'), Loader=yaml.FullLoader)
     config = merge_config(config, args)
 
@@ -211,17 +219,20 @@ def TrainValProgram(args):
     loss_bin = create_loss_bin(config, use_distil)
 
     if torch.cuda.is_available():
-        if (len(config['base']['gpu_id'].split(',')) > 1):
-            model = torch.nn.DataParallel(model).cuda()
-        else:
-            model = model.cuda()
+        # TODO 多gpu
+        # if (len(config['base']['gpu_id'].split(',')) > 1):
+        #     model = torch.nn.DataParallel(model).cuda()
+        # else:
+        model = model.cuda()
         criterion = criterion.cuda()
 
     start_epoch = 0
     rescall, precision, hmean = 0, 0, 0
+    # 早停判断
     best_rescall, best_precision, best_hmean = 0, 0, 0
 
     if args.pruned_model_dict_path is not None:
+        logger.info("finetune the pruend model.'")
         print('finetune the pruend model.')
         model = load_prune_model(model, args.prune_model_path, args.pruned_model_dict_path, args.prune_type)
         log_write = Logger(os.path.join(checkpoints, 'log.txt'), title=config['base']['algorithm'])
@@ -253,6 +264,7 @@ def TrainValProgram(args):
         start_epoch = args.start_epoch
 
     for epoch in range(start_epoch, config['base']['n_epoch']):
+        # TODO start_epoch 有啥用 恢复训练的时候用的。从上次训练的epoch开始。
         model.train()
         if args.t_config is not None:
             t_model.train()
@@ -302,6 +314,7 @@ def TrainValProgram(args):
 
 
 if __name__ == "__main__":
+    logger_utils.init()
     parser = argparse.ArgumentParser(description='Hyperparams')
     parser.add_argument('--config', help='config file path')
     parser.add_argument('--t_config', default=None, help='config file path')
