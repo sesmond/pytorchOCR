@@ -142,6 +142,7 @@ def TrainValProgram(args):
     config['base']['classes'] = len(LabelConverter.alphabet)
     model = create_module(config['architectures']['model_function'])(config)
     criterion = create_module(config['architectures']['loss_function'])(config)
+    # TODO 两个参数
     train_dataset = create_module(config['trainload']['function'])(config,'train')
     val_dataset = create_module(config['valload']['function'])(config,'val')
     optimizer = create_module(config['optimizer']['function'])(config, model.parameters())

@@ -76,8 +76,8 @@ optimizer_decay_center:
  gama: 0.1
  
 trainload:
-  function: ptocr.dataloader.RecLoad.CRNNProcess1,GetDataLoad
-  train_file: ['/src/notebooks/MyworkData/EnglishCrnnData/train_lmdb/SynthText/','/src/notebooks/MyworkData/EnglishCrnnData/train_lmdb/MJSynth']
+  function: ptocr.dataloader.RecLoad.CRNNProcess,CRNNProcessTxtLoad
+  train_file: data/crnn/crnn.3770/train.txt
   batch_ratio: [0.5,0.5]
   key_file: ./dataset/charset.eng.txt
   bg_path: ./bg_img/
@@ -85,8 +85,8 @@ trainload:
   batch_size: 512
 
 testload:
-  function: ptocr.dataloader.RecLoad.CRNNProcess1,CRNNProcessTest
-  test_file: /src/notebooks/MyworkData/EnglishCrnnData/val_new.txt
+  function: ptocr.dataloader.RecLoad.CRNNProcess,CRNNProcessTxtLoad
+  test_file: data/crnn/crnn.3770/validate.txt
   num_workers: 8
   batch_size: 256
 
