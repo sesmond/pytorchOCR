@@ -93,7 +93,10 @@ testload:
   
 label_transform:
   function: ptocr.utils.transform_label,strLabelConverter
-  
+  label_function: ptocr.dataloader.RecLoad.DataAgument,transform_label
+  t_type: lower
+  char_type: En
+
 transform:
   function: ptocr.dataloader.RecLoad.DataAgument,transform_label
   t_type: lower
