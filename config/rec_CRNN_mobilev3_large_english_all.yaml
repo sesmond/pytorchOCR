@@ -84,9 +84,9 @@ trainload:
   num_workers: 16
   batch_size: 512
 
-testload:
+valload:
   function: ptocr.dataloader.RecLoad.CRNNProcess,CRNNProcessTxtLoad
-  test_file: data/crnn/crnn.3770/validate.txt
+  val_file: data/crnn/crnn.3770/validate.txt
   num_workers: 8
   batch_size: 256
 
@@ -94,11 +94,6 @@ testload:
 label_transform:
   function: ptocr.utils.transform_label,strLabelConverter
   label_function: ptocr.dataloader.RecLoad.DataAgument,transform_label
-  t_type: lower
-  char_type: En
-
-transform:
-  function: ptocr.dataloader.RecLoad.DataAgument,transform_label
   t_type: lower
   char_type: En
   
