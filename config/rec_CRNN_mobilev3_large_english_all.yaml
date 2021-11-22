@@ -38,6 +38,7 @@ loss:
   function: ptocr.model.loss.ctc_loss,CTCLoss
 #  TODO ctc_type all 和lmdp有什么区别
   ctc_type: 'torchctc'
+  loss_title: ['ctc_loss']
   use_ctc_weight: False
   reduction: 'mean' 
   center_function: ptocr.model.loss.centerloss,CenterLoss
