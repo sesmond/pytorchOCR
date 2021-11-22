@@ -121,13 +121,13 @@ class CRNNProcessTxtLoad(Dataset):
         if data_type == 'train':
             label_file = config['trainload']['train_file']
             workers = config['trainload']['num_workers']
-            self.data_path = os.path.join(os.path.dir(label_file), "train")
+            self.data_path = os.path.join(os.path.dirname(label_file), "train")
             # self.img_path =
 
         elif data_type == 'val':
             label_file = config['valload']['val_file']
             workers = config['valload']['num_workers']
-            self.data_path = os.path.join(os.path.dir(label_file), "train")
+            self.data_path = os.path.join(os.path.dirname(label_file), "validate")
         else:
             assert 1 == 1
             raise ('data_type error !!!')
