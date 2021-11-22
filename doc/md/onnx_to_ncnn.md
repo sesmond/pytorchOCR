@@ -13,7 +13,8 @@ python -m onnxsim crnn_lite_lstm_v2.onnx crnn_lite_lstm_v2-sim.onnx
 ```
 # onnx2ncnn 是ncnn项目编译后的其中一个工具，位置在：ncnn/build-mac/tools/onnx
 
-./onnx2ncnn ose-lite-sim.onnx pse-lite.param pse-lite.bin
+./onnx2ncnn pse-lite-sim.onnx pse-lite.param pse-lite.bin
+./onnx2ncnn db-lite-sim.onnx db-lite.param db-lite.bin
 
 ```
 

@@ -1,1 +1,1 @@
-python3 -m onnxsim $1 $2
+python -m onnxsim $1 $2

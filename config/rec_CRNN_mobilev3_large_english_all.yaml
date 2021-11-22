@@ -10,6 +10,8 @@ base:
   use_attention: False
   use_lstm: True
   lstm_num: 2
+  n_epoch: 1200
+  start_val: 0
   classes: 1000
   max_iters: 300000
   eval_iter: 10000
@@ -20,6 +22,7 @@ base:
   restore: False
   finetune: False
   restore_file : ./checkpoint/ag_CRNN_bb_rec_crnn_backbone_he_CRNN_Head_bs_256_ep_20_20210207English/CRNN_best.pth.tar
+
 
 backbone:
   function: ptocr.model.backbone.rec_mobilev3_bd,mobilenet_v3_large
@@ -33,6 +36,8 @@ architectures:
 
 loss:
   function: ptocr.model.loss.ctc_loss,CTCLoss
+#  TODO ctc_type all 和lmdp有什么区别
+  ctc_type: 'torchctc'
   use_ctc_weight: False
   reduction: 'mean' 
   center_function: ptocr.model.loss.centerloss,CenterLoss
@@ -74,7 +79,7 @@ trainload:
   function: ptocr.dataloader.RecLoad.CRNNProcess1,GetDataLoad
   train_file: ['/src/notebooks/MyworkData/EnglishCrnnData/train_lmdb/SynthText/','/src/notebooks/MyworkData/EnglishCrnnData/train_lmdb/MJSynth']
   batch_ratio: [0.5,0.5]
-  key_file: /src/notebooks/MyworkData/EnglishCrnnData/key_new.txt
+  key_file: ./dataset/charset.eng.txt
   bg_path: ./bg_img/
   num_workers: 16
   batch_size: 512

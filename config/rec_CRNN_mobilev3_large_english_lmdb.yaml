@@ -31,7 +31,7 @@ architectures:
 
 loss:
   function: ptocr.model.loss.ctc_loss,CTCLoss
-  ctc_type: 'warpctc' # torchctc
+  ctc_type: 'torchctc' # torchctc warpctc
   use_ctc_weight: False
   loss_title: ['ctc_loss']
 
@@ -51,8 +51,8 @@ optimizer_decay:
  
 trainload:
   function: ptocr.dataloader.RecLoad.CRNNProcess,CRNNProcessLmdbLoad
-  train_file: '/src/notebooks/MyworkData/EnglishCrnnData/train_lmdb/SynthText/'
-  key_file: /src/notebooks/MyworkData/EnglishCrnnData/key_new.txt
+  train_file: './data/icdar2015/'
+  key_file: ./dataset/charset.eng.txt
   bg_path: ./bg_img/
   num_workers: 10
   batch_size: 512

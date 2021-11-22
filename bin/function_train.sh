@@ -56,8 +56,39 @@ function get_train_cmd {
   fi
 
   if [ "$var" = "识别" ]; then
-      echo "停止训练"
-      ps aux|grep python|grep name=psenet|awk '{print $2}'|xargs kill -9
-      exit
+    select rnet in "CRNN" "FC"; do
+          break;
+      done
+      case $dnet in
+        "CRNN" )
+           select rbackbone in "mobilev3" "resnet50" "resnet50_3_3"; do
+                break;
+            done
+          ;;
+        "FC" )
+         select rbackbone in "mobilev3" "resnet50" "resnet50_3_3"; do
+                break;
+            done
+          ;;
+        "*" )
+          echo "选择错误！"
+          exit
+          ;;
+      esac
+      config_file="./config/reg_${rnet}_${rbackbone}.yaml"
+      echo "配置文件："$config_file
+#      read -p "输入训练要用的GPU:" gpus ;
+#      echo "您选择了GPU $gpus 进行训练"
+#      set -x
+      RTN_CMD=" python -m tools.det_train \
+        --config $config_file \
+        --log_str "logs" \
+        --n_epoch 1200 \
+        --start_val 600 \
+        --base_lr 0.002 \
+         >> ./logs/rec_train_$Date.log 2>&1 &"
+#         shell的function只能返回整数值,字符串只能通过变量返回
+      return 0
   fi
 }
+

@@ -20,7 +20,7 @@ import torch.nn.functional as F
 import torchvision.transforms as transforms
 from ptocr.utils.util_function import create_module,resize_image_batch
 from ptocr.utils.util_function import create_process_obj,create_dir,load_model
-from script.onnx_to_tensorrt import build_engine,allocate_buffers,do_inference
+# from script.onnx_to_tensorrt import build_engine,allocate_buffers,do_inference
 
 def config_load(args):
     stream = open(args.config, 'r', encoding='utf-8')
