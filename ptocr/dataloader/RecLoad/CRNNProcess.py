@@ -83,6 +83,7 @@ class CRNNProcessLmdbLoad(Dataset):
             label = txn.get(label_key.encode('utf-8')).decode()
         label = self.transform_label(label, char_type=self.config['label_transform']['char_type'],
                                      t_type=self.config['label_transform']['t_type'])
+        # TODO 这个给用坏了，
         if self.config['base']['is_gray']:
             img = img.convert('L')
         img = PILImageToCV(img, self.config['base']['is_gray'])
@@ -156,6 +157,8 @@ class CRNNProcessTxtLoad(Dataset):
         label = self.transform_label(label, char_type=self.config['label_transform']['char_type'],
                                      t_type=self.config['label_transform']['t_type'])
         img = cv2.imread(img_path)
+        if self.config['base']['is_gray']:
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         if self.data_type == 'train':
             try:
                 # TODO !! 增强
