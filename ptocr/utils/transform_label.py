@@ -37,7 +37,8 @@ class StrLabelConverter(object):
 
     def __init__(self, config):
         alphabet = get_keys(config['trainload']['key_file'])
-        self.alphabet = alphabet + '-'  # for `-1` index
+        # TODO 空格用'～'表示，预测的时候也用'～'解析，解析完之后替换
+        self.alphabet = alphabet + '～'  # for `-1` index
         self.dict = {}
         # TODO 给字符排序 TODO 这里预测的时候也必须一样才能预测，不然没法预测
         for i, char in enumerate(alphabet):
@@ -56,7 +57,8 @@ class StrLabelConverter(object):
         """
         length = []
         result = []
-
+        # TODO 替换成可解析的字符
+        text = text.replace(" ", "～")
         for i in range(len(text)):
             length.append(len(text[i]))
             for j in range(len(text[i])):
