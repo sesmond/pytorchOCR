@@ -1,5 +1,5 @@
 base:
-  gpu_id: '0'
+  gpu_id: '1'
   algorithm: CRNN
   pretrained: False
   inchannel: 576
