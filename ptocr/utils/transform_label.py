@@ -58,11 +58,12 @@ class StrLabelConverter(object):
         length = []
         result = []
         # TODO 替换成可解析的字符
-        text = text.replace(" ", "～")
         for i in range(len(text)):
             length.append(len(text[i]))
-            for j in range(len(text[i])):
-                index = self.dict[text[i][j]]
+            line = text[i]
+            line = line.replace(" ", "～")
+            for j in range(len(line)):
+                index = self.dict[line[j]]
                 result.append(index)
 
         text = result
