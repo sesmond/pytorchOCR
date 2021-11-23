@@ -67,9 +67,11 @@ class StrLabelConverter(object):
                 # print(line, self.dict_index)
                 ch = line[j]
                 if ch not in self.alphabet:
-                    print("字符不存在：", ch, line)
-                index = self.alphabet.index(ch)
-                print("输出后序列：", ch, index)
+                    print("字符不存在,强制赋值为0：", ch, line)
+                    index = 0
+                else:
+                    index = self.alphabet.index(ch)
+                    # print("输出后序列：", ch, index)
                 # ]
                 result.append(index)
         text = result
