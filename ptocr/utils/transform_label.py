@@ -41,6 +41,7 @@ class StrLabelConverter(object):
         self.alphabet = alphabet + "～"  # for `-1` index
         self.dict_index = {}
         # TODO 给字符排序 TODO 这里预测的时候也必须一样才能预测，不然没法预测
+        self.dict_index["～"] = 0
         for i, char in enumerate(alphabet):
             # NOTE: 0 is reserved for 'blank' required by wrap_ctc  TODO 空格是0，所以用的i+1
             self.dict_index[char] = i + 1
@@ -63,7 +64,7 @@ class StrLabelConverter(object):
             line = text[i]
             line = line.replace(" ", "～")
             for j in range(len(line)):
-                print(line, self.dict_index)
+                # print(line, self.dict_index)
                 index = self.dict_index[line[j]]
                 result.append(index)
         text = result
