@@ -150,7 +150,7 @@ class CRNNProcessTxtLoad(Dataset):
     def __getitem__(self, index):
         assert index < len(self), 'index range error'
         img_key = self.image_names[index]
-        img_path = os.path.join(self.data_path, os.path.base_name(img_key))
+        img_path = os.path.join(self.data_path, os.path.basename(img_key))
         # label = txn.get(label_key.encode('utf-8')).decode()
         label = self.image_labels[index]
         label = self.transform_label(label, char_type=self.config['label_transform']['char_type'],
