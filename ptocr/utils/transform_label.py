@@ -65,7 +65,11 @@ class StrLabelConverter(object):
             line = line.replace(" ", "～")
             for j in range(len(line)):
                 # print(line, self.dict_index)
-                index = self.alphabet.index(line[j])
+                ch = line[j]
+                if ch not in self.alphabet:
+                    print("字符不存在：", ch, line)
+                index = self.alphabet.index(ch)
+                print("输出后序列：", ch, index)
                 # ]
                 result.append(index)
         text = result
