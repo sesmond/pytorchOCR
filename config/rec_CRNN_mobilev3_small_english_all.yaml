@@ -1,5 +1,5 @@
 base:
-  gpu_id: '1'
+  gpu_id: '0'
   algorithm: CRNN
   pretrained: False
   inchannel: 576
@@ -33,6 +33,9 @@ architectures:
 
 loss:
   function: ptocr.model.loss.ctc_loss,CTCLoss
+#  TODO ctc_type all 和lmdp有什么区别
+  ctc_type: 'torchctc'
+  loss_title: ['ctc_loss']
   use_ctc_weight: False
   reduction: 'mean' 
   center_function: ptocr.model.loss.centerloss,CenterLoss
@@ -71,28 +74,24 @@ optimizer_decay_center:
  gama: 0.1
  
 trainload:
-  function: ptocr.dataloader.RecLoad.CRNNProcess1,GetDataLoad
-  train_file: ['/src/notebooks/MyworkData/EnglishCrnnData/train_lmdb/SynthText/','/src/notebooks/MyworkData/EnglishCrnnData/train_lmdb/MJSynth']
+  function: ptocr.dataloader.RecLoad.CRNNProcess,CRNNProcessTxtLoad
+  train_file: data/crnn/crnn.3770/train.txt
   batch_ratio: [0.5,0.5]
-  key_file: /src/notebooks/MyworkData/EnglishCrnnData/key_new.txt
+  key_file: ./dataset/charset.eng.txt
   bg_path: ./bg_img/
   num_workers: 16
   batch_size: 512
 
 valload:
-  function: ptocr.dataloader.RecLoad.CRNNProcess1,GetValDataLoad
-  root: '/src/notebooks/pytorchOCR-master/english_val_img'
-  dir: ['CUTE80','IC03_867','IC13_1015','IC13_857','IC15_1811','IIIT5k_3000','SVT','SVTP','IC15_2077']
-  test_file: /src/notebooks/MyworkData/EnglishCrnnData/val_new.txt
-  num_workers: 2
-  batch_size: 1
+  function: ptocr.dataloader.RecLoad.CRNNProcess,CRNNProcessTxtLoad
+  val_file: data/crnn/crnn.3770/validate.txt
+  num_workers: 8
+  batch_size: 256
 
   
 label_transform:
   function: ptocr.utils.transform_label,strLabelConverter
-  
-transform:
-  function: ptocr.dataloader.RecLoad.DataAgument,transform_label
+  label_function: ptocr.dataloader.RecLoad.DataAgument,transform_label
   t_type: lower
   char_type: En
   
