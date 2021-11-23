@@ -38,7 +38,7 @@ class StrLabelConverter(object):
     def __init__(self, config):
         alphabet = get_keys(config['trainload']['key_file'])
         # TODO 空格用'～'表示，预测的时候也用'～'解析，解析完之后替换
-        self.alphabet = alphabet + '～'  # for `-1` index
+        self.alphabet = alphabet + "～"  # for `-1` index
         self.dict = {}
         # TODO 给字符排序 TODO 这里预测的时候也必须一样才能预测，不然没法预测
         for i, char in enumerate(alphabet):
@@ -63,6 +63,7 @@ class StrLabelConverter(object):
             line = text[i]
             line = line.replace(" ", "～")
             for j in range(len(line)):
+                print(line, dict)
                 index = self.dict[line[j]]
                 result.append(index)
 
@@ -205,5 +206,14 @@ class FCConverter(BaseConverter):
 
 
 if __name__ == '__main__':
-    xxx = get_keys("dataset/charset.3770.txt")
-    print(xxx)
+    # xxx = get_keys("dataset/charset.3770.txt")
+    # print(xxx)
+    alphabet = get_keys("dataset/charset.3770.txt")
+    # TODO 空格用'～'表示，预测的时候也用'～'解析，解析完之后替换
+    alphabet = alphabet + "～"  # for `-1` index
+    dict = {}
+    # TODO 给字符排序 TODO 这里预测的时候也必须一样才能预测，不然没法预测
+    for i, char in enumerate(alphabet):
+        # NOTE: 0 is reserved for 'blank' required by wrap_ctc  TODO 空格是0，所以用的i+1
+        dict[char] = i + 1
+    print(dict)
