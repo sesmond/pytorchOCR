@@ -173,6 +173,8 @@ class CRNNProcessTxtLoad(Dataset):
         img = CVImageToPIL(img, self.config['base']['is_gray'])
         img = transforms.ToTensor()(img)
         img.sub_(0.5).div_(0.5)
+        print("shape：", img_path, img.shape)
+        # TODO !! 这里有些=1的估计是黑白的图片，这里要处理一下，统一转化成rgb三通道
         return (img, label)
 
 
