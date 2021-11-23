@@ -1,26 +1,30 @@
-#-*- coding:utf-8 _*-
+# -*- coding:utf-8 _*-
 """
 @author:fxw
 @file: transform_label.py
 @time: 2020/07/24
 """
-import torch
-import torch.nn as nn
-from torch.autograd import Variable
-import collections
 # import chardet
-import numpy as np
-import sys
 import abc
 
+import torch
+from torch.autograd import Variable
+
+
 def get_keys(key_path):
-    with open(key_path,'r',encoding='utf-8') as fid:
-        lines = fid.readlines()[0]
-        lines = lines.strip('\n')
-        return lines
-    
-#☯
-class strLabelConverter(object):
+    charset = open(key_path, 'r', encoding='utf-8').readlines()
+    charset = [ch.strip("\n") for ch in charset]
+    charset = "".join(charset)
+    return charset
+    # with open(key_path, 'r', encoding='utf-8') as fid:
+    #     lines = fid.readlines()[0]
+    #     lines = lines.strip('\n')
+    #
+    #     return lines
+
+
+# ☯
+class StrLabelConverter(object):
     """Convert between str and label.
 
     NOTE:
@@ -35,11 +39,12 @@ class strLabelConverter(object):
         alphabet = get_keys(config['trainload']['key_file'])
         self.alphabet = alphabet + '-'  # for `-1` index
         self.dict = {}
+        # TODO 给字符排序 TODO 这里预测的时候也必须一样才能预测，不然没法预测
         for i, char in enumerate(alphabet):
-            # NOTE: 0 is reserved for 'blank' required by wrap_ctc
+            # NOTE: 0 is reserved for 'blank' required by wrap_ctc  TODO 空格是0，所以用的i+1
             self.dict[char] = i + 1
 
-    def encode(self, text,t_step):
+    def encode(self, text, t_step):
         """Support batch or single str.
 
         Args:
@@ -127,9 +132,8 @@ class averager(object):
         if self.n_count != 0:
             res = self.sum / float(self.n_count)
         return res
-    
-    
-    
+
+
 class BaseConverter(object):
 
     def __init__(self, character):
@@ -149,7 +153,6 @@ class BaseConverter(object):
     @abc.abstractmethod
     def decode(self, *args, **kwargs):
         '''decode label to text in train and test phase'''
-
 
 
 class FCConverter(BaseConverter):
@@ -172,7 +175,7 @@ class FCConverter(BaseConverter):
             text = list(t)
             text.append('[s]')
             text = [self.dict[char] for char in text]
-            if self.batch_max_length>=len(text):
+            if self.batch_max_length >= len(text):
                 batch_text[i][:len(text)] = torch.LongTensor(text)
             else:
                 batch_text[i][:self.batch_max_length] = torch.LongTensor(text)[:self.batch_max_length]
@@ -196,3 +199,8 @@ class FCConverter(BaseConverter):
             texts.append(text)
 
         return texts
+
+
+if __name__ == '__main__':
+    xxx = get_keys("dataset/charset.3770.txt")
+    print(xxx)

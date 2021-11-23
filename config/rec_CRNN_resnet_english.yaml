@@ -86,7 +86,7 @@ testload:
 
   
 label_transform:
-  function: ptocr.utils.transform_label,strLabelConverter
+  function: ptocr.utils.transform_label,StrLabelConverter
   
 infer:
 #   model_path: './checkpoint/ag_CRNN_bb_rec_crnn_backbone_he_CRNN_Head_bs_256_ep_10_synthtext/CRNN_best.pth.tar'

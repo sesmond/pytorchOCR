@@ -64,7 +64,7 @@ valload:
   batch_size: 256
 
 label_transform:
-  function: ptocr.utils.transform_label,strLabelConverter
+  function: ptocr.utils.transform_label,StrLabelConverter
   label_function: ptocr.dataloader.RecLoad.DataAgument,transform_label
   t_type: lower
   char_type: En

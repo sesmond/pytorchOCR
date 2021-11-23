@@ -29,6 +29,7 @@ np.random.seed(GLOBAL_SEED)
 random.seed(GLOBAL_SEED)
 
 def ModelTrain(train_data_loader,LabelConverter, model,criterion,optimizer, train_log,loss_dict, config, epoch):
+    # TODO!!
     for batch_idx, ( imgs,labels) in enumerate(train_data_loader):
         pre_batch = {}
         gt_batch = {}

@@ -87,7 +87,7 @@ testload:
 
   
 label_transform:
-  function: ptocr.utils.transform_label,strLabelConverter
+  function: ptocr.utils.transform_label,StrLabelConverter
   
 transform:
   function: ptocr.dataloader.RecLoad.DataAgument,transform_label

@@ -79,7 +79,7 @@ trainload:
   function: ptocr.dataloader.RecLoad.CRNNProcess,CRNNProcessTxtLoad
   train_file: data/crnn/crnn.3770/train.txt
   batch_ratio: [0.5,0.5]
-  key_file: ./dataset/charset.eng.txt
+  key_file: ./dataset/charset.3770.txt
   bg_path: ./bg_img/
   num_workers: 16
   batch_size: 512
@@ -92,7 +92,7 @@ valload:
 
   
 label_transform:
-  function: ptocr.utils.transform_label,strLabelConverter
+  function: ptocr.utils.transform_label,StrLabelConverter
   label_function: ptocr.dataloader.RecLoad.DataAgument,transform_label
   t_type: lower
   char_type: En

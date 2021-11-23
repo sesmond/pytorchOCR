@@ -1,4 +1,5 @@
 import glob
+import logging
 import os
 import sys
 
@@ -16,6 +17,8 @@ from torch.utils.data import Dataset
 import torchvision.transforms as transforms
 from ptocr.dataloader.RecLoad.DataAgument import transform_img_shape, DataAugment
 from ptocr.utils.util_function import create_module, PILImageToCV, CVImageToPIL
+
+logger = logging.getLogger(__name__)
 
 
 def get_img(path, is_gray=False):
@@ -55,6 +58,7 @@ class CRNNProcessLmdbLoad(Dataset):
             self.nSamples = nSamples
 
         self.transform_label = create_module(config['label_transform']['label_function'])
+        # TODO 这只是一个函数，但是在里边初始化了
 
         self.bg_img = []
         for path in glob.glob(os.path.join(config['trainload']['bg_path'], '*')):
@@ -81,6 +85,7 @@ class CRNNProcessLmdbLoad(Dataset):
 
             label_key = 'label-%09d' % index
             label = txn.get(label_key.encode('utf-8')).decode()
+        # TODO 这里是为了统一大小写
         label = self.transform_label(label, char_type=self.config['label_transform']['char_type'],
                                      t_type=self.config['label_transform']['t_type'])
         # TODO 这个给用坏了，
@@ -154,8 +159,10 @@ class CRNNProcessTxtLoad(Dataset):
         img_path = os.path.join(self.data_path, os.path.basename(img_key))
         # label = txn.get(label_key.encode('utf-8')).decode()
         label = self.image_labels[index]
-        label = self.transform_label(label, char_type=self.config['label_transform']['char_type'],
-                                     t_type=self.config['label_transform']['t_type'])
+        # TODO 这个在DataAgument里 为了统一英文大小写，这里不统一了因为要放在一起训练
+        # label = self.transform_label(label, char_type=self.config['label_transform']['char_type'],
+        #                              t_type=self.config['label_transform']['t_type'])
+        print("样本标签：", img_key, label)
         img = cv2.imread(img_path)
         if self.config['base']['is_gray']:
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
