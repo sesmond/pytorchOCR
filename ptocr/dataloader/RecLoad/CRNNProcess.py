@@ -162,7 +162,7 @@ class CRNNProcessTxtLoad(Dataset):
         # TODO 这个在DataAgument里 为了统一英文大小写，这里不统一了因为要放在一起训练
         # label = self.transform_label(label, char_type=self.config['label_transform']['char_type'],
         #                              t_type=self.config['label_transform']['t_type'])
-        print("样本标签：", img_key, label)
+        # print("样本标签：", img_key, label)
         img = cv2.imread(img_path)
         if self.config['base']['is_gray']:
             img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
