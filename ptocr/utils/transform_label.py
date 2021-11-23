@@ -63,6 +63,7 @@ class StrLabelConverter(object):
             length.append(len(text[i]))
             line = text[i]
             line = line.replace(" ", "～")
+            line = line.replace("＊", "*")
             for j in range(len(line)):
                 # print(line, self.dict_index)
                 ch = line[j]
