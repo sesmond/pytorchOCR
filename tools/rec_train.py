@@ -15,10 +15,11 @@ np.seterr(divide='ignore', invalid='ignore')
 import yaml
 import torch.utils.data
 from ptocr.utils.util_function import create_module, save_checkpoint, create_dir
-from ptocr.utils.logger import TrainLog
 from ptocr.utils.util_function import merge_config, AverageMeter, restore_training
 from ptocr.dataloader.RecLoad.CRNNProcess import alignCollate
+import logging
 
+logger = logging.getLogger(__name__)
 ### 设置随机种子
 GLOBAL_SEED = 2020
 torch.manual_seed(GLOBAL_SEED)
@@ -71,10 +72,10 @@ def ModelTrain(train_data_loader, LabelConverter, model, criterion, optimizer, t
             for i in range(len(keys)):
                 log += keys[i] + ':{:.4f}'.format(loss_dict[keys[i]].avg) + ' | '
             log += 'lr:{:.8f}'.format(optimizer.param_groups[0]['lr'])
-            train_log.info(log)
+            logger.info(log)
 
 
-def ModelEval(val_data_loader, LabelConverter, model, criterion, train_log, loss_dict, config):
+def ModelEval(val_data_loader, LabelConverter, model, criterion, loss_dict, config):
     bar = tqdm(total=len(val_data_loader))
     val_loss = AverageMeter()
     n_correct = AverageMeter()
@@ -116,10 +117,10 @@ def ModelEval(val_data_loader, LabelConverter, model, criterion, train_log, loss
                 n_correct.update(1)
     raw_preds = LabelConverter.decode(preds.data, preds_size.data, raw=True)[:config['base']['show_num']]
     for raw_pred, pred, gt in zip(raw_preds, sim_preds, labels):
-        train_log.info('recog example %-20s => %-20s, gt: %-20s' % (raw_pred, pred, gt))
+        logger.info('recog example %-20s => %-20s, gt: %-20s' % (raw_pred, pred, gt))
 
     val_acc = n_correct.sum / float(len(val_data_loader) * config['valload']['batch_size'])
-    train_log.info('val loss: %f, val accuray: %f' % (val_loss.avg, val_acc))
+    logger.info('val loss: %f, val accuray: %f' % (val_loss.avg, val_acc))
     return val_acc
 
 
@@ -150,8 +151,8 @@ def TrainValProgram(args):
     optimizer_decay = create_module(config['optimizer_decay']['function'])
     if os.path.exists(os.path.join(checkpoints, 'train_log.txt')):
         os.remove(os.path.join(checkpoints, 'train_log.txt'))
-    train_log = TrainLog(os.path.join(checkpoints, 'train_log.txt'))
-    train_log.info(model)
+    # logger = TrainLog(os.path.join(checkpoints, 'train_log.txt'))
+    logger.info(model)
 
     train_data_loader = torch.utils.data.DataLoader(
         train_dataset,
@@ -188,17 +189,17 @@ def TrainValProgram(args):
     best_acc = 0
 
     if config['base']['restore']:
-        train_log.info('Resuming from checkpoint.')
+        logger.info('Resuming from checkpoint.')
         assert os.path.isfile(config['base']['restore_file']), 'Error: no checkpoint file found!'
         model, optimizer, start_epoch, best_acc = restore_training(config['base']['restore_file'], model, optimizer)
 
     for epoch in range(start_epoch, config['base']['n_epoch']):
         model.train()
         optimizer_decay(config, optimizer, epoch)
-        ModelTrain(train_data_loader, LabelConverter, model, criterion, optimizer, train_log, loss_dict, config, epoch)
+        ModelTrain(train_data_loader, LabelConverter, model, criterion, optimizer, loss_dict, config, epoch)
         if (epoch >= config['base']['start_val']):
             model.eval()
-            val_acc = ModelEval(val_data_loader, LabelConverter, model, criterion, train_log, loss_dict, config)
+            val_acc = ModelEval(val_data_loader, LabelConverter, model, criterion, loss_dict, config)
             if (val_acc > best_acc):
                 save_checkpoint({
                     'epoch': epoch + 1,
@@ -208,7 +209,7 @@ def TrainValProgram(args):
                     'best_acc': val_acc
                 }, checkpoints, config['base']['algorithm'] + '_best' + '.pth.tar')
                 best_acc = val_acc
-        train_log.info('best_acc:' + str(best_acc))
+        logger.info('best_acc:' + str(best_acc))
         for key in loss_dict.keys():
             loss_dict[key].reset()
 
