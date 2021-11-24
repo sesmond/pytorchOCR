@@ -29,7 +29,7 @@ np.random.seed(GLOBAL_SEED)
 random.seed(GLOBAL_SEED)
 
 
-def ModelTrain(train_data_loader, LabelConverter, model, criterion, optimizer, train_log, loss_dict, config, epoch):
+def ModelTrain(train_data_loader, label_converter, model, criterion, optimizer, loss_dict, config, epoch):
     # TODO!!
     for batch_idx, (imgs, labels) in enumerate(train_data_loader):
         pre_batch = {}
@@ -41,7 +41,7 @@ def ModelTrain(train_data_loader, LabelConverter, model, criterion, optimizer, t
         preds = preds.permute(1, 0, 2)
 
         #########
-        labels, labels_len = LabelConverter.encode(labels, preds.size(0))
+        labels, labels_len = label_converter.encode(labels, preds.size(0))
         preds_size = Variable(torch.IntTensor([preds.size(0)] * config['trainload']['batch_size']))
         pre_batch['preds'], pre_batch['preds_size'] = preds, preds_size
         gt_batch['labels'], gt_batch['labels_len'] = labels, labels_len
